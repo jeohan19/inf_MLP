@@ -14,13 +14,13 @@ import torch
 
 INPUT_SIZE = 1
 NUM_HIDDEN_LAYERS = 4
-HIDDEN_SIZE = 32
+HIDDEN_SIZE = 16
 OUTPUT_SIZE = 1
 LEARNING_RATE = 0.0001
-EPOCHS = 60
+EPOCHS = 120
 LEAKY_RELU_ALPHA = 0.01
 PRINT_EVERY = 1
-FUNKCE = "y = x * cos(x ^ 3)"
+FUNKCE = "y = x * cos(x ^ 2)"
 ROZSAH_TRAIN_DAT = "-8 8"
 DATA_FILE = "train\\tr_x_cos_x216.txt"
 TEST_DATA = "train\\te_x_cos_x216.txt"
@@ -33,7 +33,9 @@ TEST_DATA = "train\\te_x_cos_x216.txt"
 \\tr_x_cos_x216.txt"
 \\tr_xcos(x)16.txt"
 \\te_(x7+3)2.txt"
-\\te_moc316.txt"
+\\te_moc316.txt"¨
+\\tr_xcos(x^2)32.txt"
+\\te_xcos(x^2)32.txt"
 
 
 tvoření modelu
