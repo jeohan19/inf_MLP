@@ -14,10 +14,10 @@ import torch
 
 INPUT_SIZE = 1
 NUM_HIDDEN_LAYERS = 8
-HIDDEN_SIZE = 12
+HIDDEN_SIZE = 6
 OUTPUT_SIZE = 1
 LEARNING_RATE = 0.0001
-EPOCHS = 12
+EPOCHS = 16
 LEAKY_RELU_ALPHA = 0.01
 PRINT_EVERY = 1
 FUNKCE = "y = x * cos(x ^ 2)"
@@ -115,7 +115,7 @@ import math
 # Inicializace vah v rozsahu -1 až 1
 def random_init_weights(rows, cols):
     """Inicializace vah náhodně v rozsahu -1 až 1."""
-    return [[random.uniform(-1, 1) for _ in range(cols)] for _ in range(rows)]
+    return [[random.uniform(-1.2, 1.2) for _ in range(cols)] for _ in range(rows)]
 
 def init_biases(size):
     """Inicializace biasů na nulu."""
@@ -318,18 +318,71 @@ plt.show()
 
 print("complete")
 
-# Spojení všech vah do jedné velké matice
-all_weights = np.concatenate([np.array(w).flatten() for w in weights])
+from matplotlib.colors import Normalize
+from matplotlib.cm import ScalarMappable
 
-# Převod na matici vhodnou pro heatmapu
-matrix_size = int(np.ceil(np.sqrt(len(all_weights))))  # Nejbližší čtvercové rozložení
-weight_matrix = np.zeros((matrix_size, matrix_size))
-weight_matrix.flat[:len(all_weights)] = all_weights  # Naplnění hodnotami vah
+def draw_network_with_weights(input_size, hidden_layers, hidden_size, output_size, weights):
+    G = nx.DiGraph()
+    positions = {}
+    layer_sizes = [input_size] + [hidden_size] * hidden_layers + [output_size]
+    
+    neuron_id = 0
+    x_spacing = 2
+    y_spacing = 1.5
+    layer_colors = plt.cm.viridis(np.linspace(0, 1, len(layer_sizes)))
 
-# Vykreslení heatmapy
-plt.figure(figsize=(16, 12))
-sns.heatmap(weight_matrix, cmap="viridis", annot=False, cbar_kws={'label': 'Hodnota váhy'})
-plt.title("Heatmapa všech vah v neuronové síti")
-plt.xlabel("Index váhy")
-plt.ylabel("Index váhy")
-plt.show()
+    # Přidání uzlů a jejich pozic
+    for layer_idx, layer_size in enumerate(layer_sizes):
+        y_offset = -(layer_size - 1) * y_spacing / 2
+        for neuron_idx in range(layer_size):
+            G.add_node(neuron_id, layer=layer_idx)
+            positions[neuron_id] = (layer_idx * x_spacing, y_offset + neuron_idx * y_spacing)
+            neuron_id += 1
+
+    # Přidání hran s vahami
+    prev_layer_start = 0
+    for layer_idx in range(len(layer_sizes) - 1):
+        current_layer_start = prev_layer_start + layer_sizes[layer_idx]
+        for i in range(layer_sizes[layer_idx]):
+            for j in range(layer_sizes[layer_idx + 1]):
+                weight_value = weights[layer_idx][i][j]
+                G.add_edge(prev_layer_start + i, current_layer_start + j, weight=weight_value)
+        prev_layer_start = current_layer_start
+
+    # Vizualizace
+    edges = G.edges(data=True)
+    weights_list = [data['weight'] for _, _, data in edges]
+    
+    # Normalizace vah pro barvu a tloušťku hran
+    norm = Normalize(vmin=min(weights_list), vmax=max(weights_list))
+    edge_colors = [plt.cm.seismic(norm(w)) for w in weights_list]  # Červená = negativní, modrá = pozitivní
+    edge_widths = [abs(w) * 2 for w in weights_list]  # Zvýraznění síly váhy
+
+    # Barvy uzlů podle vrstev
+    node_colors = [layer_colors[G.nodes[n]['layer']] for n in G.nodes()]
+
+    # Vykreslení sítě
+    plt.figure(figsize=(12, 8))
+    nx.draw(
+        G, pos=positions, 
+        node_color=node_colors, 
+        edge_color=edge_colors, 
+        width=edge_widths, 
+        with_labels=False, 
+        node_size=700, 
+        edge_cmap=plt.cm.seismic
+    )
+
+    # Přidání barevné legendy pro váhy
+    sm = ScalarMappable(cmap=plt.cm.seismic, norm=norm)
+    sm.set_array([])
+    cbar = plt.colorbar(sm)
+    cbar.set_label('Hodnota váhy (negativní -> pozitivní)')
+
+    plt.title("Neuronová síť s vizualizací vah")
+    plt.axis('off')
+    plt.show()
+
+# Zavolání funkce
+draw_network_with_weights(INPUT_SIZE, NUM_HIDDEN_LAYERS, HIDDEN_SIZE, OUTPUT_SIZE, weights)
+
