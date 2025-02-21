@@ -17,7 +17,7 @@ NUM_HIDDEN_LAYERS = 4
 HIDDEN_SIZE = 16
 OUTPUT_SIZE = 1
 LEARNING_RATE = 0.0001
-EPOCHS = 120
+EPOCHS = 12
 LEAKY_RELU_ALPHA = 0.01
 PRINT_EVERY = 1
 FUNKCE = "y = x * cos(x ^ 2)"
@@ -332,20 +332,18 @@ plt.show()
 
 print("complete")
 
-plt.figure(figsize=(19, 10))
-sns.histplot(np.array(true_values) - np.array(predictions), bins=30, kde=True)
-plt.xlabel("Chyba (y_true - y_pred)")
-plt.ylabel("Počet vzorků")
-plt.title("Histogram chyb")
-plt.grid(True)
-plt.show()
+# Spojení všech vah do jedné velké matice
+all_weights = np.concatenate([np.array(w).flatten() for w in weights])
 
-plt.figure(figsize=(19, 10))
-sns.kdeplot(true_values, label="Skutečné hodnoty", fill=True, color="blue")
-sns.kdeplot(predictions, label="Predikované hodnoty", fill=True, color="red")
-plt.xlabel("y")
-plt.ylabel("Hustota pravděpodobnosti")
-plt.legend()
-plt.title("Porovnání distribuce skutečných a predikovaných hodnot")
-plt.grid(True)
+# Převod na matici vhodnou pro heatmapu
+matrix_size = int(np.ceil(np.sqrt(len(all_weights))))  # Nejbližší čtvercové rozložení
+weight_matrix = np.zeros((matrix_size, matrix_size))
+weight_matrix.flat[:len(all_weights)] = all_weights  # Naplnění hodnotami vah
+
+# Vykreslení heatmapy
+plt.figure(figsize=(16, 12))
+sns.heatmap(weight_matrix, cmap="viridis", annot=False, cbar_kws={'label': 'Hodnota váhy'})
+plt.title("Heatmapa všech vah v neuronové síti")
+plt.xlabel("Index váhy")
+plt.ylabel("Index váhy")
 plt.show()
