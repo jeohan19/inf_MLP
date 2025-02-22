@@ -9,7 +9,6 @@ import networkx as nx
 import seaborn as sns
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
-import torch
 ##########
 
 INPUT_SIZE = 1
