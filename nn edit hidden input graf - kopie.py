@@ -13,11 +13,11 @@ import torch
 ##########
 
 INPUT_SIZE = 1
-NUM_HIDDEN_LAYERS = 6
-HIDDEN_SIZE = 12
+NUM_HIDDEN_LAYERS = 8
+HIDDEN_SIZE = 6
 OUTPUT_SIZE = 1
 LEARNING_RATE = 0.0001
-EPOCHS = 70
+EPOCHS = 16
 LEAKY_RELU_ALPHA = 0.01
 PRINT_EVERY = 1
 FUNKCE = "y = x * cos(x ^ 2)"
@@ -34,6 +34,8 @@ TEST_DATA = "train\\te_x_cos_x216.txt"
 \\tr_xcos(x)16.txt"
 \\te_(x7+3)2.txt"
 \\te_moc316.txt"¨
+\\tr_xcos(x^2)32.txt"
+\\te_xcos(x^2)32.txt"
 
 
 tvoření modelu
@@ -87,7 +89,7 @@ def draw_neural_network(input_size, hidden_layers, hidden_size, output_size):
         for neuron_idx in range(layer_size):
             G.add_node(neuron_id)
             positions[neuron_id] = (layer_idx * x_spacing, y_offset + neuron_idx * y_spacing)
-            labels[neuron_id] = f'h_{neuron_id+1}'
+            labels[neuron_id] = f'n{neuron_id+1}'
             neuron_id += 1
     
     prev_layer_start = 0
@@ -107,39 +109,39 @@ def draw_neural_network(input_size, hidden_layers, hidden_size, output_size):
     plt.show()
 ############################################################################################
 
+import random
+import math
 
-def he_init_weights(rows, cols):
-    """Inicializace vah pomocí He normal (vhodné pro ReLU a Leaky ReLU)"""
-    std_dev = math.sqrt(2 / rows)
-    return [[random.gauss(0, std_dev) for _ in range(cols)] for _ in range(rows)]
+# Inicializace vah v rozsahu -1 až 1
+def random_init_weights(rows, cols):
+    """Inicializace vah náhodně v rozsahu -1 až 1."""
+    return [[random.uniform(-1.2, 1.2) for _ in range(cols)] for _ in range(rows)]
 
 def init_biases(size):
-    """Inicializace biasů na nulu (doporučené pro He inicializaci)"""
+    """Inicializace biasů na nulu."""
     return [0.0 for _ in range(size)]
 
 # Inicializace vah a biasů pro vstupní vrstvu do skryté vrstvy
-weights = [he_init_weights(INPUT_SIZE, HIDDEN_SIZE)]
+weights = [random_init_weights(INPUT_SIZE, HIDDEN_SIZE)]
 biases = [init_biases(HIDDEN_SIZE)]
 
 # Inicializace pro skryté vrstvy
 for _ in range(NUM_HIDDEN_LAYERS - 1):
-    weights.append(he_init_weights(HIDDEN_SIZE, HIDDEN_SIZE))
+    weights.append(random_init_weights(HIDDEN_SIZE, HIDDEN_SIZE))
     biases.append(init_biases(HIDDEN_SIZE))
 
 # Inicializace pro poslední skrytou vrstvu do výstupní vrstvy
-weights.append(he_init_weights(HIDDEN_SIZE, OUTPUT_SIZE))
+weights.append(random_init_weights(HIDDEN_SIZE, OUTPUT_SIZE))
 biases.append(init_biases(OUTPUT_SIZE))
 
-
-
+# Funkce aktivace a její derivace
 def leaky_relu(x):
     return x if x > 0 else LEAKY_RELU_ALPHA * x
 
 def leaky_relu_derivative(x):
     return 1 if x > 0 else LEAKY_RELU_ALPHA
 
-
-'''''
+# Forward propagation
 def forward(x):
     layers = [x]
     for i in range(NUM_HIDDEN_LAYERS + 1):
@@ -148,53 +150,39 @@ def forward(x):
         layers.append(next_layer)
     return layers
 
-def backward(x, y, layers):
-    global weights, biases
-    global errors 
-    errors = [ [layers[-1][i] - y[i] for i in range(OUTPUT_SIZE)] ]
-    gradients = [errors[0]]
-    
-    for i in range(NUM_HIDDEN_LAYERS, -1, -1):
-        layer_errors = [sum(gradients[0][j] * weights[i][k][j] for j in range(len(gradients[0]))) for k in range(len(layers[i]))]
-        gradients.insert(0, [layer_errors[k] * leaky_relu_derivative(layers[i][k]) for k in range(len(layer_errors))])
-        
-        for j in range(len(gradients[1])):
-            for k in range(len(layers[i])):
-                weights[i][k][j] -= LEARNING_RATE * gradients[1][j] * layers[i][k]
-            biases[i][j] -= LEARNING_RATE * gradients[1][j]
-'''''
-
-def forward(x):
-    layers = [x]
-    for i in range(NUM_HIDDEN_LAYERS + 1):
-        next_layer = [leaky_relu(sum(layers[-1][k] * weights[i][k][j] for k in range(len(layers[-1]))) + biases[i][j])
-                      for j in range(len(biases[i]))]
-        layers.append(next_layer)
-    return layers
-
+# Backpropagation
 def backward(x, y, layers):
     global weights, biases
     global errors 
 
-    # Výpočet chyby jako MSE
     errors = [[(layers[-1][i] - y[i]) for i in range(OUTPUT_SIZE)]]
-    
-    # Gradient MSE: (2/N) * (y_pred - y_true)
     mse_gradient = [(2 / OUTPUT_SIZE) * e for e in errors[0]]
-    gradients = [mse_gradient]  # Počáteční gradient chyby
+    gradients = [mse_gradient]
 
-    # Backpropagation skrz vrstvy
     for i in range(NUM_HIDDEN_LAYERS, -1, -1):
-        layer_errors = [sum(gradients[0][j] * weights[i][k][j] for j in range(len(gradients[0]))) 
+        layer_errors = [sum(gradients[0][j] * weights[i][k][j] for j in range(len(gradients[0])))
                         for k in range(len(layers[i]))]
-        gradients.insert(0, [layer_errors[k] * leaky_relu_derivative(layers[i][k]) 
+        gradients.insert(0, [layer_errors[k] * leaky_relu_derivative(layers[i][k])
                              for k in range(len(layer_errors))])
-        
-        # Úprava vah a biasů
         for j in range(len(gradients[1])):
             for k in range(len(layers[i])):
                 weights[i][k][j] -= LEARNING_RATE * gradients[1][j] * layers[i][k]
             biases[i][j] -= LEARNING_RATE * gradients[1][j]
+
+# Načtení trénovacích dat
+def load_training_data(file):
+    data = []
+    with open(file, "r") as f:
+        for line in f:
+            values = list(map(float, line.split()))
+            x = values[:-1]
+            y = values[-1:]
+            data.append((x, y))
+    return data
+
+training_data = load_training_data(DATA_FILE)
+gradients_history = []
+loss_history = []
 
 
 def load_training_data(file):
@@ -397,3 +385,4 @@ def draw_network_with_weights(input_size, hidden_layers, hidden_size, output_siz
 
 # Zavolání funkce
 draw_network_with_weights(INPUT_SIZE, NUM_HIDDEN_LAYERS, HIDDEN_SIZE, OUTPUT_SIZE, weights)
+
