@@ -13,10 +13,10 @@ from sklearn.manifold import TSNE
 
 INPUT_SIZE = 1
 NUM_HIDDEN_LAYERS = 4
-HIDDEN_SIZE = 16
+HIDDEN_SIZE = 32
 OUTPUT_SIZE = 1
 LEARNING_RATE = 0.0001
-EPOCHS = 3
+EPOCHS = 100
 LEAKY_RELU_ALPHA = 0.01
 PRINT_EVERY = 1
 FUNKCE = "y = x * cos(x ^ 2)"
@@ -341,7 +341,8 @@ def draw_network_with_weights(input_size, hidden_layers, hidden_size, output_siz
     node_colors = [layer_colors[G.nodes[n]['layer']] for n in G.nodes()]
 
     # Vykreslení sítě
-    plt.figure(figsize=(12, 8))
+    # Vykreslení sítě
+    fig, ax = plt.subplots(figsize=(12, 8))
     nx.draw(
         G, pos=positions, 
         node_color=node_colors, 
@@ -349,18 +350,20 @@ def draw_network_with_weights(input_size, hidden_layers, hidden_size, output_siz
         width=edge_widths, 
         with_labels=False, 
         node_size=700, 
-        edge_cmap=plt.cm.seismic
+        edge_cmap=plt.cm.seismic,
+        ax=ax  # Explicitně připojíme osy
     )
 
     # Přidání barevné legendy pro váhy
     sm = ScalarMappable(cmap=plt.cm.seismic, norm=norm)
-    sm.set_array([])
-    cbar = plt.colorbar(sm)
+    sm.set_array([])  # Potřebné pro vytvoření colorbar
+    cbar = plt.colorbar(sm, ax=ax)  # Připojení ke konkrétním osám
     cbar.set_label('Hodnota váhy (negativní -> pozitivní)')
 
     plt.title("Neuronová síť s vizualizací vah")
     plt.axis('off')
     plt.show()
+
 
 # Zavolání funkce
 draw_network_with_weights(INPUT_SIZE, NUM_HIDDEN_LAYERS, HIDDEN_SIZE, OUTPUT_SIZE, weights)
