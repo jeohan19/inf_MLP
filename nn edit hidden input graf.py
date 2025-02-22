@@ -16,13 +16,13 @@ NUM_HIDDEN_LAYERS = 4
 HIDDEN_SIZE = 16
 OUTPUT_SIZE = 1
 LEARNING_RATE = 0.0001
-EPOCHS = 40
+EPOCHS = 150
 LEAKY_RELU_ALPHA = 0.01
 PRINT_EVERY = 1
 FUNKCE = "y = x * cos(x ^ 2)"
 ROZSAH_TRAIN_DAT = "-8 8"
-DATA_FILE = "train\\tr_moc316.txt"
-TEST_DATA = "train\\tr_moc316.txt"
+DATA_FILE = "train\\te_moc316.txt"
+TEST_DATA = "train\\te_moc316.txt"
 
 '''''
 \\te_x_cos_x216.txt"
