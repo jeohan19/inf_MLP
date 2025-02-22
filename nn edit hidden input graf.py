@@ -34,39 +34,7 @@ TEST_DATA = "train\\te_x_cos_x216.txt"
 \\tr_xcos(x)16.txt"
 \\te_(x7+3)2.txt"
 \\te_moc316.txt"¨
-
-
-tvoření modelu
-model = Sequential()
-
-# Vstupní vrstva
-model.add(Dense(HIDDEN_SIZE, input_shape=(INPUT_SIZE,), kernel_initializer=HeNormal()))
-model.add(LeakyReLU(alpha=LEAKY_RELU_ALPHA))
-
-# Skryté vrstvy
-for _ in range(NUM_HIDDEN_LAYERS - 1):
-    model.add(Dense(HIDDEN_SIZE, kernel_initializer=HeNormal()))
-    model.add(LeakyReLU(alpha=LEAKY_RELU_ALPHA))
-
-# Výstupní vrstva
-model.add(Dense(OUTPUT_SIZE, kernel_initializer=HeNormal(), activation='linear'))
-
-# Kompilace modelu
-model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=LEARNING_RATE), loss='mse')
-
-# Načtení trénovacích dat
-def load_training_data(file):
-    data = np.loadtxt(file)
-    x, y = data[:, :-1], data[:, -1:]
-    return x, y
-
-training_data, labels = load_training_data("data.txt")
-
-# Trénování modelu
-model.fit(training_data, labels, epochs=100, batch_size=32, verbose=1)
-
 '''
-
 
 
 
