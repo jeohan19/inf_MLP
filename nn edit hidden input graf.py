@@ -12,12 +12,14 @@ from sklearn.manifold import TSNE
 import torch
 ##########
 
+# 254 s vs 
+
 INPUT_SIZE = 1
-NUM_HIDDEN_LAYERS = 6
-HIDDEN_SIZE = 12
+NUM_HIDDEN_LAYERS = 4
+HIDDEN_SIZE = 16
 OUTPUT_SIZE = 1
 LEARNING_RATE = 0.0001
-EPOCHS = 70
+EPOCHS = 3
 LEAKY_RELU_ALPHA = 0.01
 PRINT_EVERY = 1
 FUNKCE = "y = x * cos(x ^ 2)"
