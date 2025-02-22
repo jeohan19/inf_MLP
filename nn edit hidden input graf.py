@@ -19,11 +19,7 @@ NUM_HIDDEN_LAYERS = 4
 HIDDEN_SIZE = 16
 OUTPUT_SIZE = 1
 LEARNING_RATE = 0.0001
-<<<<<<< HEAD
 EPOCHS = 3
-=======
-EPOCHS = 80
->>>>>>> parent of a686107 (fg)
 LEAKY_RELU_ALPHA = 0.01
 PRINT_EVERY = 1
 FUNKCE = "y = x * cos(x ^ 2)"
@@ -93,7 +89,7 @@ def draw_neural_network(input_size, hidden_layers, hidden_size, output_size):
         for neuron_idx in range(layer_size):
             G.add_node(neuron_id)
             positions[neuron_id] = (layer_idx * x_spacing, y_offset + neuron_idx * y_spacing)
-            labels[neuron_id] = f'n{neuron_id+1}'
+            labels[neuron_id] = f'h_{neuron_id+1}'
             neuron_id += 1
     
     prev_layer_start = 0
