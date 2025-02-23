@@ -12,15 +12,15 @@ print(f"Použité zařízení: {device}")
 
 # ✅ Parametry sítě
 INPUT_SIZE = 1
-NUM_HIDDEN_LAYERS = 16
+NUM_HIDDEN_LAYERS = 32
 HIDDEN_SIZE = 128
 OUTPUT_SIZE = 1
 LEARNING_RATE = 0.0001
-EPOCHS = 1000
+EPOCHS = 10000
 LEAKY_RELU_ALPHA = 0.01
 PRINT_EVERY = 1
-DATA_FILE = "train/te_moc316.txt"
-TEST_DATA = "train/te_moc316.txt"
+DATA_FILE = "train/training_data_1.txt"
+TEST_DATA = "train/training_data_1.txt"
 
 # ✅ Definice neuronové sítě v PyTorch
 class MLP(nn.Module):

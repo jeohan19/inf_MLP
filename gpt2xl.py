@@ -13,7 +13,7 @@ model = GPT2LMHeadModel.from_pretrained("./gpt2_xl_model").to(device)
 
 
 # Vstupní text pro generaci
-input_text = "First human on the moon was"
+input_text = "A nuclear weapon is an explosive device that derives its destructive force from nuclear reactions, either fission (fission or atomic bomb) or a combination of fission and fusion reactions (thermonuclear bomb), producing a nuclear explosion. Both bomb types release large quantities of energy from relatively small amounts of matter."
 
 # Příprava vstupu s attention_mask
 inputs = tokenizer.encode_plus(
@@ -29,11 +29,11 @@ attention_mask = inputs["attention_mask"].to(device)
 outputs = model.generate(
     input_ids,
     attention_mask=attention_mask,
-    max_length=150,  # Maximální délka generovaného textu
+    max_length=270,  # Maximální délka generovaného textu
     do_sample=True,  # Povolit náhodný výběr tokenů
     temperature=0.5,  # Zvýšení kreativity
     top_k=50,  # Omezit výběr na top 50 možností
-    top_p=0.95,  # Omezit výběr na nejpravděpodobnější tokeny
+    top_p=0.99,  # Omezit výběr na nejpravděpodobnější tokeny
     no_repeat_ngram_size=3,  # Zákaz opakování 3slovných frází
     pad_token_id=tokenizer.pad_token_id  # Nastavení ukončovacího tokenu
 )
