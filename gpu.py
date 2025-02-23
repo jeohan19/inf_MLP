@@ -3,7 +3,6 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 import matplotlib.pyplot as plt
-import random
 import torch
 import time
 
@@ -13,15 +12,15 @@ print(f"Použité zařízení: {device}")
 
 # ✅ Parametry sítě
 INPUT_SIZE = 1
-NUM_HIDDEN_LAYERS = 4
-HIDDEN_SIZE = 32
+NUM_HIDDEN_LAYERS = 16
+HIDDEN_SIZE = 128
 OUTPUT_SIZE = 1
 LEARNING_RATE = 0.0001
-EPOCHS = 800
+EPOCHS = 1000
 LEAKY_RELU_ALPHA = 0.01
-PRINT_EVERY = 10
-DATA_FILE = "train/tr_x_cos_x216.txt"
-TEST_DATA = "train/te_x_cos_x216.txt"
+PRINT_EVERY = 1
+DATA_FILE = "train/te_moc316.txt"
+TEST_DATA = "train/te_moc316.txt"
 
 # ✅ Definice neuronové sítě v PyTorch
 class MLP(nn.Module):
