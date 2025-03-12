@@ -206,7 +206,7 @@ def draw_neural_network(input_size, hidden_layers, hidden_size, output_size):
         
         prev_layer_start = current_layer_start
     
-    plt.figure(figsize=(19, 10))
+    plt.figure(figsize=(16, 9), dpi = 160)
     nx.draw(G, pos=positions, with_labels=True, labels=labels, node_color='lightblue', edge_color='gray', node_size=1500)
     plt.suptitle(f"Struktura neuronové sítě\nNeurony ve skrytých vrstvách: {hidden_size}, Skryté vrstvy: {hidden_layers}")
     plt.subplots_adjust(top=3)
@@ -220,7 +220,7 @@ x_values = np.array([x[0] for x, _ in test_data])
 true_values = np.array([true_y[0] for _, true_y in test_data])
 
 # Nastavení grafu
-fig, ax = plt.subplots(figsize=(19, 10))
+fig, ax = plt.subplots(figsize=(16, 9), dpi = 160)
 line_true, = ax.plot(x_values, true_values, 'bo', label='Skutečné hodnoty')  # Skutečné hodnoty (modré)
 line_pred, = ax.plot([], [], 'ro', label='Predikované hodnoty')  # Predikované hodnoty (červené)
 
@@ -253,7 +253,7 @@ plt.show(block=True)
 
 
 # Inicializace grafu (ponecháme colorbar)
-fig, ax = plt.subplots(figsize=(19, 10))
+fig, ax = plt.subplots(figsize=(16, 9), dpi = 160)
 norm = Normalize(vmin=-1, vmax=1)
 sm = ScalarMappable(cmap=plt.cm.seismic, norm=norm)
 sm.set_array([])
@@ -320,7 +320,7 @@ plt.show(block=True)
 
 
 
-fig_loss, ax_loss = plt.subplots(figsize=(19, 10))
+fig_loss, ax_loss = plt.subplots(figsize=(16, 9), dpi = 160)
 
 # Inicializace prázdného grafu
 ax_loss.set_xlabel("Epoch")
@@ -385,7 +385,7 @@ x_plot = np.array(x_values)
 y_true_plot = np.array(true_values)
 y_pred_plot = np.array(predictions)
 
-plt.figure(figsize=(19, 10))
+plt.figure(figsize=(16, 9), dpi = 160)
 plt.plot(range(PRINT_EVERY, EPOCHS + 1, PRINT_EVERY), loss_history, label="Loss")
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
@@ -395,7 +395,7 @@ plt.grid(True)
 plt.ylim(0, max(loss_history) * 1.1)
 plt.show(block=True)
 
-plt.figure(figsize=(19, 10))
+plt.figure(figsize=(16, 9), dpi = 160)
 plt.scatter(x_plot, y_true_plot, color='blue', label='skutečné hodnoty')
 plt.scatter(x_plot, y_pred_plot, color='red', label='predikované hodnoty')
 plt.xlabel('x')
@@ -449,7 +449,7 @@ def draw_network_with_weights(input_size, hidden_layers, hidden_size, output_siz
 
     # Vykreslení sítě
     # Vykreslení sítě
-    fig, ax = plt.subplots(figsize=(19, 10))
+    fig, ax = plt.subplots(figsize=(16, 9), dpi = 160)
     nx.draw(
         G, pos=positions, 
         node_color=node_colors, 

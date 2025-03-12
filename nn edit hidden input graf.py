@@ -67,7 +67,7 @@ def draw_neural_network(input_size, hidden_layers, hidden_size, output_size):
         
         prev_layer_start = current_layer_start
     
-    plt.figure(figsize=(19, 10))
+    plt.figure(figsize=(16, 9), dpi = 160)
     nx.draw(G, pos=positions, with_labels=True, labels=labels, node_color='lightblue', edge_color='gray', node_size=1500)
     plt.suptitle(f"Struktura neuronové sítě\nNeurony ve skrytých vrstvách: {hidden_size}, Skryté vrstvy: {hidden_layers}")
     plt.subplots_adjust(top=3)
@@ -276,7 +276,7 @@ x_plot = np.array(x_values)
 y_true_plot = np.array(true_values)
 y_pred_plot = np.array(predictions)
 
-plt.figure(figsize=(19, 10))
+plt.figure(figsize=(16, 9), dpi = 160)
 plt.plot(range(PRINT_EVERY, EPOCHS + 1, PRINT_EVERY), loss_history, label="Loss")
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
@@ -285,7 +285,7 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
-plt.figure(figsize=(19, 10))
+plt.figure(figsize=(16, 9), dpi = 160)
 plt.scatter(x_plot, y_true_plot, color='blue', label='skutečné hodnoty')
 plt.scatter(x_plot, y_pred_plot, color='red', label='predikované hodnoty')
 plt.xlabel('x')

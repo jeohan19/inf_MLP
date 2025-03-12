@@ -31,6 +31,44 @@ DATA_FILE = "train\\te_xcos(x)16.txt"
 TEST_DATA = "train\\te_xcos(x)16.txt"
 SPEED = 50
 
+# Vstupy od uživatele
+INPUT_SIZE = int(input("Zadejte INPUT_SIZE: "))
+NUM_HIDDEN_LAYERS = int(input("Zadejte NUM_HIDDEN_LAYERS: "))
+HIDDEN_SIZE = int(input("Zadejte HIDDEN_SIZE: "))
+OUTPUT_SIZE = int(input("Zadejte OUTPUT_SIZE: "))
+LEARNING_RATE = float(input("Zadejte LEARNING_RATE (např. 0.0001): "))
+EPOCHS = int(input("Zadejte EPOCHS: "))
+LEAKY_RELU_ALPHA = float(input("Zadejte LEAKY_RELU_ALPHA (např. 0.01): "))
+PRINT_EVERY = int(input("Zadejte PRINT_EVERY: "))
+FUNKCE = input("Zadejte funkci: ")
+
+# Rozsah trénovacích dat
+ROZSAH_TRAIN_DAT = input("Zadejte ROZSAH_TRAIN_DAT (např. '-8 8'): ")
+
+# Soubory s daty
+DATA_FILE = input("Zadejte cestu k souboru s trénovacími daty (např. 'train\\te_xcos(x)16.txt'): ")
+TEST_DATA = input("Zadejte cestu k souboru s testovacími daty (např. 'train\\te_xcos(x)16.txt'): ")
+
+# Rychlost učení
+SPEED = int(input("Zadejte SPEED (např. 50): "))
+
+# Kontrola zadaných hodnot
+print("\nNastavení:")
+print(f"INPUT_SIZE = {INPUT_SIZE}")
+print(f"NUM_HIDDEN_LAYERS = {NUM_HIDDEN_LAYERS}")
+print(f"HIDDEN_SIZE = {HIDDEN_SIZE}")
+print(f"OUTPUT_SIZE = {OUTPUT_SIZE}")
+print(f"LEARNING_RATE = {LEARNING_RATE}")
+print(f"EPOCHS = {EPOCHS}")
+print(f"LEAKY_RELU_ALPHA = {LEAKY_RELU_ALPHA}")
+print(f"PRINT_EVERY = {PRINT_EVERY}")
+print(f"FUNKCE = {FUNKCE}")
+print(f"ROZSAH_TRAIN_DAT = {ROZSAH_TRAIN_DAT}")
+print(f"DATA_FILE = {DATA_FILE}")
+print(f"TEST_DATA = {TEST_DATA}")
+print(f"SPEED = {SPEED}")
+
+
 '''''
 \\te_x_cos_x216.txt"
 \\te_xcos(x)16.txt"
