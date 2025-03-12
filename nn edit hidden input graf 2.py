@@ -210,7 +210,7 @@ def draw_neural_network(input_size, hidden_layers, hidden_size, output_size):
     nx.draw(G, pos=positions, with_labels=True, labels=labels, node_color='lightblue', edge_color='gray', node_size=1500)
     plt.suptitle(f"Struktura neuronové sítě\nNeurony ve skrytých vrstvách: {hidden_size}, Skryté vrstvy: {hidden_layers}")
     plt.subplots_adjust(top=3)
-    plt.show()
+    plt.show(block=True)
 
 draw_neural_network(INPUT_SIZE, NUM_HIDDEN_LAYERS, HIDDEN_SIZE, OUTPUT_SIZE)
 ############################################################################################
@@ -246,10 +246,10 @@ def update(epoch):
     return line_pred, title
 
 # Vytvoření animace
-ani = animation.FuncAnimation(fig, update, frames=EPOCHS, interval=SPEED, blit=False)
+ani_struct = animation.FuncAnimation(fig, update, frames=EPOCHS, interval=SPEED, blit=False, repeat=False)
 
 # Zobrazení animace
-plt.show()
+plt.show(block=True)
 
 
 # Inicializace grafu (ponecháme colorbar)
@@ -314,8 +314,8 @@ def update(epoch):
     ax.set_title(f"Neuronová síť – Vývoj vah (Epocha {epoch+1}/{EPOCHS})")
     print(f"Rendering epoch {epoch+1}/{EPOCHS}")
 
-ani = animation.FuncAnimation(fig, update, frames=list(range(0, EPOCHS, 1)), repeat=False, interval=SPEED)
-plt.show()
+ani_heat = animation.FuncAnimation(fig, update, frames=list(range(0, EPOCHS, 1)), repeat=False, interval=SPEED)
+plt.show(block=True)
 
 
 
@@ -350,80 +350,11 @@ def update_loss(epoch_idx):
 ani_loss = animation.FuncAnimation(fig_loss, update_loss, frames=len(loss_history), repeat=False, interval=SPEED)
 
 plt.legend()
-plt.show()
+plt.show(block=True)
 plt.close(fig_loss)  # Zavře okno po skončení animace
 
 
 
-############################
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-import multiprocessing
-import tkinter as tk
-from ctypes import windll
-
-# Nastavení DPI pro správné měřítko na Windows
-windll.shcore.SetProcessDpiAwareness(1)
-
-# Funkce pro vykreslení jednoho grafu
-def plot_graph(position):
-    fig, ax = plt.subplots()
-    x_data, y_data = [], []
-    
-    line, = ax.plot([], [], 'r')
-    ax.set_xlim(0, 100)
-    ax.set_ylim(-1, 1)
-    ax.set_title(f'Graph at {position}')
-    
-    def init():
-        line.set_data([], [])
-        return line,
-    
-    def update(frame):
-        x_data.append(frame)
-        y_data.append(np.sin(frame * 0.1))
-        line.set_data(x_data, y_data)
-        return line,
-    
-    ani = animation.FuncAnimation(fig, update, frames=range(100), init_func=init, blit=True)
-    
-    # Nastavení pozice okna
-    root = tk.Tk()
-    screen_width = root.winfo_screenwidth()
-    screen_height = root.winfo_screenheight()
-    root.destroy()
-    
-    manager = plt.get_current_fig_manager()
-    if position == "top-left":
-        manager.window.geometry(f"600x400+0+0")
-    elif position == "top-right":
-        manager.window.geometry(f"600x400+{screen_width - 600}+0")
-    elif position == "bottom-left":
-        manager.window.geometry(f"600x400+0+{screen_height - 400}")
-    elif position == "bottom-right":
-        manager.window.geometry(f"600x400+{screen_width - 600}+{screen_height - 400}")
-    
-    plt.show()
-
-# Spuštění více procesů pro synchronní běh grafů
-def main():
-    positions = ["top-left", "top-right", "bottom-left", "bottom-right"]
-    processes = []
-    
-    for pos in positions:
-        p = multiprocessing.Process(target=plot_graph, args=(pos,))
-        p.start()
-        processes.append(p)
-    
-    for p in processes:
-        p.join()
-
-if __name__ == "__main__":
-    main()
-
-
-############################
 
 
 print("\ntest:")
@@ -461,7 +392,8 @@ plt.ylabel("Loss")
 plt.title(f"Křivka učení\nčas na epochu: {graf_time}, neurony ve skrytych vrstvách: {HIDDEN_SIZE}, skryté vrstvy: {NUM_HIDDEN_LAYERS}, alpha: {LEAKY_RELU_ALPHA}, learning_rate: {LEARNING_RATE} \nfunkce: {FUNKCE}, rozsah train dat: {ROZSAH_TRAIN_DAT}")
 plt.legend()
 plt.grid(True)
-plt.show()
+plt.ylim(0, max(loss_history) * 1.1)
+plt.show(block=True)
 
 plt.figure(figsize=(19, 10))
 plt.scatter(x_plot, y_true_plot, color='blue', label='skutečné hodnoty')
@@ -471,7 +403,7 @@ plt.ylabel('y')
 plt.legend()
 plt.title(f"porovnání skutečné a naučené funkce\nneurony ve skrytych vrstvách: {HIDDEN_SIZE}, skryté vrstvy: {NUM_HIDDEN_LAYERS}, alpha: {LEAKY_RELU_ALPHA}, learning_rate: {LEARNING_RATE} \n funkce: {FUNKCE}, rozsah train dat: {ROZSAH_TRAIN_DAT}")
 plt.grid(True)
-plt.show()
+plt.show(block=True)
 
 print("complete")
 
@@ -508,7 +440,7 @@ def draw_network_with_weights(input_size, hidden_layers, hidden_size, output_siz
     weights_list = [data['weight'] for _, _, data in edges]
     
     # Normalizace vah pro barvu a tloušťku hran
-    norm = Normalize(vmin=min(weights_list), vmax=max(weights_list))
+    norm = Normalize(vmin=-1, vmax=1)
     edge_colors = [plt.cm.seismic(norm(w)) for w in weights_list]  # Červená = negativní, modrá = pozitivní
     edge_widths = [abs(w) * 2 for w in weights_list]  # Zvýraznění síly váhy
 
@@ -517,7 +449,7 @@ def draw_network_with_weights(input_size, hidden_layers, hidden_size, output_siz
 
     # Vykreslení sítě
     # Vykreslení sítě
-    fig, ax = plt.subplots(figsize=(12, 8))
+    fig, ax = plt.subplots(figsize=(19, 10))
     nx.draw(
         G, pos=positions, 
         node_color=node_colors, 
@@ -537,7 +469,7 @@ def draw_network_with_weights(input_size, hidden_layers, hidden_size, output_siz
 
     plt.title("Neuronová síť s vizualizací vah")
     plt.axis('off')
-    plt.show()
+    plt.show(block=True)
 
 
 # Zavolání funkce
