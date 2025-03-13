@@ -17,40 +17,45 @@ import copy
 import curses
 ##########
 
-INPUT_SIZE = 1
-NUM_HIDDEN_LAYERS = 4
-HIDDEN_SIZE = 24
-OUTPUT_SIZE = 1
-LEARNING_RATE = 0.0001
-EPOCHS = 3
-LEAKY_RELU_ALPHA = 0.01
-PRINT_EVERY = 1
-FUNKCE = "y = x * cos(x ^ 2)"
-ROZSAH_TRAIN_DAT = "-8 8"
-DATA_FILE = "train\\te_xcos(x)16.txt"
-TEST_DATA = "train\\te_xcos(x)16.txt"
-SPEED = 50
+DATA_FILES = [
+    "train\\te_xcos(x)16.txt",
+    "train\\te_x_cos_x216.txt",
+    "train\\tr_(x7+3)2.txt",
+    "train\\tr_moc316.txt",
+    "train\\tr_x_cos_x216.txt",
+    "train\\tr_xcos(x)16.txt",
+    "train\\te_(x7+3)2.txt",
+    "train\\te_moc316.txt"
+]
+
+print("Dostupné soubory:")
+for i, file in enumerate(DATA_FILES, start=1):
+    print(f"{i}: {file}")
+
+selected_index = int(input("Vyberte číslo souboru pro trénovací data: ")) - 1
+DATA_FILE = DATA_FILES[selected_index]
+print(f"Vybraný soubor pro trénovací data: {DATA_FILE}")
+
+selected_index = int(input("Vyberte číslo souboru pro testovací data: ")) - 1
+TEST_DATA = DATA_FILES[selected_index]
+print(f"Vybraný soubor pro testovací data: {TEST_DATA}")
 
 # Vstupy od uživatele
-INPUT_SIZE = int(input("Zadejte INPUT_SIZE: "))
-NUM_HIDDEN_LAYERS = int(input("Zadejte NUM_HIDDEN_LAYERS: "))
-HIDDEN_SIZE = int(input("Zadejte HIDDEN_SIZE: "))
-OUTPUT_SIZE = int(input("Zadejte OUTPUT_SIZE: "))
+INPUT_SIZE = int(input("Zadejte INPUT_SIZE (např. 1): "))
+NUM_HIDDEN_LAYERS = int(input("Zadejte NUM_HIDDEN_LAYERS (např. 4): "))
+HIDDEN_SIZE = int(input("Zadejte HIDDEN_SIZE (např. 16): "))
+OUTPUT_SIZE = int(input("Zadejte OUTPUT_SIZE (např. 1): "))
 LEARNING_RATE = float(input("Zadejte LEARNING_RATE (např. 0.0001): "))
-EPOCHS = int(input("Zadejte EPOCHS: "))
+EPOCHS = int(input("Zadejte EPOCHS (např. 300): "))
 LEAKY_RELU_ALPHA = float(input("Zadejte LEAKY_RELU_ALPHA (např. 0.01): "))
-PRINT_EVERY = int(input("Zadejte PRINT_EVERY: "))
-FUNKCE = input("Zadejte funkci: ")
+PRINT_EVERY = int(input("Zadejte PRINT_EVERY (např. 1): "))
+FUNKCE = input("Zadejte funkci (např. 'y = x * cos(x ^ 2)'): ")
 
 # Rozsah trénovacích dat
 ROZSAH_TRAIN_DAT = input("Zadejte ROZSAH_TRAIN_DAT (např. '-8 8'): ")
 
-# Soubory s daty
-DATA_FILE = input("Zadejte cestu k souboru s trénovacími daty (např. 'train\\te_xcos(x)16.txt'): ")
-TEST_DATA = input("Zadejte cestu k souboru s testovacími daty (např. 'train\\te_xcos(x)16.txt'): ")
-
 # Rychlost učení
-SPEED = int(input("Zadejte SPEED (např. 50): "))
+SPEED = int(input("Zadejte SPEED (např. 70): "))
 
 # Kontrola zadaných hodnot
 print("\nNastavení:")

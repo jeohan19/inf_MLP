@@ -19,17 +19,17 @@ import curses
 
 INPUT_SIZE = 1
 NUM_HIDDEN_LAYERS = 4
-HIDDEN_SIZE = 24
+HIDDEN_SIZE = 16
 OUTPUT_SIZE = 1
 LEARNING_RATE = 0.0001
-EPOCHS = 3
+EPOCHS = 300
 LEAKY_RELU_ALPHA = 0.01
 PRINT_EVERY = 1
 FUNKCE = "y = x * cos(x ^ 2)"
 ROZSAH_TRAIN_DAT = "-8 8"
 DATA_FILE = "train\\te_xcos(x)16.txt"
 TEST_DATA = "train\\te_xcos(x)16.txt"
-SPEED = 50
+SPEED = 100
 
 '''''
 \\te_x_cos_x216.txt"
