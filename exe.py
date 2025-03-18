@@ -1,7 +1,10 @@
 import random
 import math
 import time
+import os
 #analyse
+import matplotlib
+matplotlib.use('TkAgg') 
 import matplotlib.pyplot as plt
 import numpy as np
 import time
@@ -17,28 +20,33 @@ import copy
 import curses
 ##########
 
-DATA_FILES = [
-    "train\\te_xcos(x)16.txt",
-    "train\\te_x_cos_x216.txt",
-    "train\\tr_(x7+3)2.txt",
-    "train\\tr_moc316.txt",
-    "train\\tr_x_cos_x216.txt",
-    "train\\tr_xcos(x)16.txt",
-    "train\\te_(x7+3)2.txt",
-    "train\\te_moc316.txt"
-]
+train_folder = 'train'
+DATA_FILES = [os.path.join(train_folder, f) for f in os.listdir(train_folder) if os.path.isfile(os.path.join(train_folder, f))]
 
+# Výpis dostupných souborů
 print("Dostupné soubory:")
 for i, file in enumerate(DATA_FILES, start=1):
     print(f"{i}: {file}")
 
-selected_index = int(input("Vyberte číslo souboru pro trénovací data: ")) - 1
-DATA_FILE = DATA_FILES[selected_index]
+def select_file(prompt):
+    while True:
+        try:
+            selected_index = int(input(prompt)) - 1
+            if 0 <= selected_index < len(DATA_FILES):
+                return DATA_FILES[selected_index]
+            else:
+                print("Neplatná volba, zkuste to znovu.")
+        except ValueError:
+            print("Zadejte prosím číslo.")
+
+# Výběr souboru pro trénovací data
+DATA_FILE = select_file("Vyberte číslo souboru pro trénovací data: ")
 print(f"Vybraný soubor pro trénovací data: {DATA_FILE}")
 
-selected_index = int(input("Vyberte číslo souboru pro testovací data: ")) - 1
-TEST_DATA = DATA_FILES[selected_index]
+# Výběr souboru pro testovací data
+TEST_DATA = select_file("Vyberte číslo souboru pro testovací data: ")
 print(f"Vybraný soubor pro testovací data: {TEST_DATA}")
+
 
 # Vstupy od uživatele
 INPUT_SIZE = int(input("Zadejte INPUT_SIZE (např. 1): "))

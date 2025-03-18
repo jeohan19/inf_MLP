@@ -1,3 +1,5 @@
 venv/
 gpt2_xl_model/
 gpt2_xl_onnx/
+build/
+dist/
