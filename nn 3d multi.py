@@ -1,6 +1,7 @@
 import random
 import math
 import time
+import os
 #analyse
 import matplotlib.pyplot as plt
 import numpy as np
@@ -29,8 +30,8 @@ INPUT_SIZE = 2
 NUM_HIDDEN_LAYERS = 3
 HIDDEN_SIZE = 12
 OUTPUT_SIZE = 1
-LEARNING_RATE = 0.0001
-EPOCHS = 64
+LEARNING_RATE = 0.00004
+EPOCHS = 128
 LEAKY_RELU_ALPHA = 0.01
 PRINT_EVERY = 1
 FUNKCE = "y = x * cos(x ^ 2)"
@@ -50,7 +51,9 @@ SPEED = 64
 \\te_moc316.txt"¨
 '''
 
-
+##############################################################################
+#                          Network core (0-180)                              #
+##############################################################################
 def he_init_weights(rows, cols):
     """Inicializace vah pomocí He normal (vhodné pro ReLU a Leaky ReLU)"""
     std_dev = math.sqrt(2 / rows)
@@ -143,9 +146,6 @@ def mean_squared_error(y_true, y_pred):
 def get_weights():
     return copy.deepcopy(weights)  # Hluboká kopie, aby se zachovala historie vah
 
-
-#######################
-
 #struct
 test_data = load_training_data(TEST_DATA)
 epoch_weights = []
@@ -181,11 +181,9 @@ for epoch in range(EPOCHS):
 end_time = time.time()
 
 
-
-
-#animace
-###########################
-##################################################################################################
+##############################################################################
+#                      Vizualizace a testy (181-690)                         #
+##############################################################################
 def Struktura():
     def draw_neural_network(input_size, hidden_layers, hidden_size, output_size):
         G = nx.DiGraph()
@@ -496,10 +494,6 @@ def Struktura_heatmap():
     draw_network_with_weights(INPUT_SIZE, NUM_HIDDEN_LAYERS, HIDDEN_SIZE, OUTPUT_SIZE, weights)
 
 
-from vispy import app, scene
-from vispy.scene import visuals
-import numpy as np
-
 # Hlavní funkce pro zobrazení 3D grafu
 def Tridimenzionální_graf_main(rotating=True):
     def d_static1(test_data, epoch_predictions, rotating):
@@ -514,7 +508,7 @@ def Tridimenzionální_graf_main(rotating=True):
             y_pred = np.resize(y_pred, x1.shape)
 
         # Vytvoření canvasu
-        canvas = scene.SceneCanvas(keys='interactive', size=(1600, 900), show=True)
+        canvas = scene.SceneCanvas(keys='interactive', size=(2560, 1440), show=True)
         canvas.native.showMaximized()
         view = canvas.central_widget.add_view()
 
@@ -541,9 +535,9 @@ def Tridimenzionální_graf_main(rotating=True):
         # Rotující verze
         if rotating:
             def update(ev):
-                view.camera.azimuth += 0.5  # Rychlost rotace
+                view.camera.azimuth += 0.8  # Rychlost rotace
                 view.camera.elevation = 16 * np.sin(ev.elapsed * 1)  # Naklánění dopředu/dozadu
-            timer = app.Timer(interval=0.01, connect=update, start=True)
+            timer = app.Timer(interval=SPEED/1000, connect=update, start=True)
 
         app.run()
     d_static1(test_data, epoch_predictions, rotating)
@@ -566,7 +560,7 @@ def Tridimenzionální_graf_animace():
     true_values = np.array([true_y[0] for _, true_y in test_data])
 
     # Nastavení canvasu
-    canvas = scene.SceneCanvas(keys='interactive', size=(1600, 900), show=True)
+    canvas = scene.SceneCanvas(keys='interactive', size=(2560, 1440), show=True)
     canvas.native.showMaximized()
     view = canvas.central_widget.add_view()
 
@@ -592,7 +586,7 @@ def Tridimenzionální_graf_animace():
 
     # Text pro zobrazení epochy
     # Přidání textu do scény
-    my_text = scene.Text("Stálý popisek", parent=canvas.scene, color='white', font_size=24,
+    my_text = scene.Text(" ", parent=canvas.scene, color='white', font_size=24,
                         anchor_x='left', anchor_y='top', pos=(20, 150))
 
 
@@ -612,13 +606,13 @@ def Tridimenzionální_graf_animace():
 
     # **Rotace kamery (probíhá plynule)**
     def rotate_camera(ev):
-        view.camera.azimuth += 0.5  # Rychlost rotace
+        view.camera.azimuth += 0.8  # Rychlost rotace
         view.camera.elevation = 16 * np.sin(ev.elapsed * 0.5)  # Oscilace náklonu
         if current_epoch[0] >= len(epoch_predictions):  # Po ukončení animace udržujeme poslední predikce
             scatter_pred.set_data(np.column_stack((x_values, y_values, last_predictions)), face_color='red', size=5)
 
     # Dva různé timery
-    timer_predictions = app.Timer(interval=SPEED/50, connect=update_predictions, start=True)  # Pomalejší aktualizace predikcí
+    timer_predictions = app.Timer(interval=SPEED/1000, connect=update_predictions, start=True)  # Pomalejší aktualizace predikcí
     timer_rotation = app.Timer(interval=SPEED/1000, connect=rotate_camera, start=True)  # Rychlejší plynulá rotace
 
     app.run()
