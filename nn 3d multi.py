@@ -20,10 +20,11 @@ import pyvista as pv
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.animation import FuncAnimation
     
-
+import vispy
 from vispy import app, scene
 from vispy.scene import visuals
 import numpy as np
+vispy.app.use_app('pyqt5')
 ##########
 
 INPUT_SIZE = 2

@@ -20,10 +20,11 @@ import pyvista as pv
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.animation import FuncAnimation
     
-
+import vispy
 from vispy import app, scene
 from vispy.scene import visuals
 import numpy as np
+vispy.app.use_app('pyqt5')
 ##########
 
 
@@ -574,7 +575,7 @@ def Tridimenzionální_graf_main(rotating=True):
         # Rotující verze
         if rotating:
             def update(ev):
-                view.camera.azimuth += 0.5  # Rychlost rotace
+                view.camera.azimuth += 0.8  # Rychlost rotace
                 view.camera.elevation = 16 * np.sin(ev.elapsed * 1)  # Naklánění dopředu/dozadu
             timer = app.Timer(interval=SPEED/1000, connect=update, start=True)
 
@@ -645,7 +646,7 @@ def Tridimenzionální_graf_animace():
 
     # **Rotace kamery (probíhá plynule)**
     def rotate_camera(ev):
-        view.camera.azimuth += 0.5  # Rychlost rotace
+        view.camera.azimuth += 0.8  # Rychlost rotace
         view.camera.elevation = 16 * np.sin(ev.elapsed * 0.5)  # Oscilace náklonu
         if current_epoch[0] >= len(epoch_predictions):  # Po ukončení animace udržujeme poslední predikce
             scatter_pred.set_data(np.column_stack((x_values, y_values, last_predictions)), face_color='red', size=5)
@@ -728,3 +729,4 @@ def menu(stdscr):
 
 if __name__ == "__main__":
     curses.wrapper(menu)
+

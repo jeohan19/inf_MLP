@@ -3,3 +3,6 @@ gpt2_xl_model/
 gpt2_xl_onnx/
 build/
 dist/
+dist3d/
+dist1_non3d/
+flash/
