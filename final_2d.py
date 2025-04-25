@@ -1,7 +1,11 @@
+###################################################
+#finalní model s možností přijmat jednu hodnotu ve 
+# vstupních datech
+###################################################
+
 import random
 import math
 import time
-import os
 #analyse
 import matplotlib.pyplot as plt
 import numpy as np
@@ -16,29 +20,20 @@ import matplotlib.animation as animation
 from matplotlib.collections import LineCollection
 import copy
 import curses
-import pyvista as pv
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib.animation import FuncAnimation
-    
-import vispy
-from vispy import app, scene
-from vispy.scene import visuals
-import numpy as np
-vispy.app.use_app('pyqt5')
 ##########
 
-INPUT_SIZE = 2
-NUM_HIDDEN_LAYERS = 3
-HIDDEN_SIZE = 12
+INPUT_SIZE = 1
+NUM_HIDDEN_LAYERS = 4
+HIDDEN_SIZE = 18
 OUTPUT_SIZE = 1
-LEARNING_RATE = 0.00004
-EPOCHS = 128
+LEARNING_RATE = 0.0001
+EPOCHS = 256
 LEAKY_RELU_ALPHA = 0.01
 PRINT_EVERY = 1
 FUNKCE = "y = x * cos(x ^ 2)"
 ROZSAH_TRAIN_DAT = "-8 8"
-DATA_FILE = "train\\vlny.txt"
-TEST_DATA = "train\\vlny.txt"
+DATA_FILE = "train\\te_xcos(x)16.txt"
+TEST_DATA = "train\\te_xcos(x)16.txt"
 SPEED = 64
 
 '''''
@@ -52,9 +47,7 @@ SPEED = 64
 \\te_moc316.txt"¨
 '''
 
-##############################################################################
-#                          Network core (0-180)                              #
-##############################################################################
+
 def he_init_weights(rows, cols):
     """Inicializace vah pomocí He normal (vhodné pro ReLU a Leaky ReLU)"""
     std_dev = math.sqrt(2 / rows)
@@ -147,6 +140,9 @@ def mean_squared_error(y_true, y_pred):
 def get_weights():
     return copy.deepcopy(weights)  # Hluboká kopie, aby se zachovala historie vah
 
+
+#######################
+
 #struct
 test_data = load_training_data(TEST_DATA)
 epoch_weights = []
@@ -182,10 +178,12 @@ for epoch in range(EPOCHS):
 end_time = time.time()
 
 
-##############################################################################
-#                      Vizualizace a testy (181-690)                         #
-##############################################################################
-def Struktura():
+
+
+#animace
+###########################
+##################################################################################################
+def draw():
     def draw_neural_network(input_size, hidden_layers, hidden_size, output_size):
         G = nx.DiGraph()
         positions = {}
@@ -226,7 +224,7 @@ def Struktura():
     draw_neural_network(INPUT_SIZE, NUM_HIDDEN_LAYERS, HIDDEN_SIZE, OUTPUT_SIZE)
 ############################################################################################
 
-def Predikce_animace():
+def animated_pred():
     # Předpokládám, že x_values, true_values a epoch_predictions jsou připraveny
     x_values = np.array([x[0] for x, _ in test_data])
     true_values = np.array([true_y[0] for _, true_y in test_data])
@@ -264,7 +262,7 @@ def Predikce_animace():
     plt.show(block=True)
 
 
-def Struktura_heatmap_animace():
+def animated_heatmap():
     # Inicializace grafu (ponecháme colorbar)
     fig, ax = plt.subplots(figsize=(16, 9), dpi = 160)
     norm = Normalize(vmin=-1, vmax=1)
@@ -333,7 +331,7 @@ def Struktura_heatmap_animace():
 
 
 
-def Loss_animace():
+def animated_loss():
     fig_loss, ax_loss = plt.subplots(figsize=(16, 9), dpi = 160)
 
     # Inicializace prázdného grafu
@@ -393,7 +391,11 @@ graf_time = round((elapsed_time/EPOCHS), 4)
 print(graf_time)
     ################x####
 
-def Loss():
+def static():
+    x_plot = np.array(x_values1)
+    y_true_plot = np.array(true_values)
+    y_pred_plot = np.array(predictions)
+
     plt.figure(figsize=(16, 9), dpi = 160)
     plt.plot(range(PRINT_EVERY, EPOCHS + 1, PRINT_EVERY), loss_history, label="Loss")
     plt.xlabel("Epoch")
@@ -405,10 +407,7 @@ def Loss():
     fig = plt.gcf()
     fig.canvas.manager.full_screen_toggle()
     plt.show(block=True)
-def Predikce():
-    x_plot = np.array(x_values1)
-    y_true_plot = np.array(true_values)
-    y_pred_plot = np.array(predictions)
+
     plt.figure(figsize=(16, 9), dpi = 160)
     plt.scatter(x_plot, y_true_plot, color='blue', label='skutečné hodnoty')
     plt.scatter(x_plot, y_pred_plot, color='red', label='predikované hodnoty')
@@ -423,7 +422,7 @@ def Predikce():
 
     print("complete")
 
-def Struktura_heatmap():
+def draw_heatmap():
     def draw_network_with_weights(input_size, hidden_layers, hidden_size, output_size, weights):
         G = nx.DiGraph()
         positions = {}
@@ -494,148 +493,17 @@ def Struktura_heatmap():
     # Zavolání funkce
     draw_network_with_weights(INPUT_SIZE, NUM_HIDDEN_LAYERS, HIDDEN_SIZE, OUTPUT_SIZE, weights)
 
+options = ["draw", "draw_heatmap", "animated_heatmap", "static", "animated_loss", "animated_pred"]
 
-# Hlavní funkce pro zobrazení 3D grafu
-def Tridimenzionální_graf_main(rotating=True):
-    def d_static1(test_data, epoch_predictions, rotating):
-        # Data
-        x1 = np.array([data[0][0] for data in test_data])
-        x2 = np.array([data[0][1] for data in test_data])
-        y_true = np.array([data[1][0] for data in test_data])
-        y_pred = np.array(epoch_predictions[-1])
-
-        # Kontrola velikosti predikcí
-        if y_pred.shape[0] != x1.shape[0]:
-            y_pred = np.resize(y_pred, x1.shape)
-
-        # Vytvoření canvasu
-        canvas = scene.SceneCanvas(keys='interactive', size=(2560, 1440), show=True)
-        canvas.native.showMaximized()
-        view = canvas.central_widget.add_view()
-
-        # Automatické nastavení přiblížení
-        max_range = max(np.ptp(x1), np.ptp(x2), np.ptp(y_true), np.ptp(y_pred))
-        view.camera = 'turntable'  # Možnost rotace pomocí myši
-        view.camera.elevation = 4
-        view.camera.azimuth = 45
-        view.camera.scale_factor = max_range * 1.5  # Automatické přizpůsobení
-
-        # Skutečné hodnoty
-        scatter_true = visuals.Markers()
-        scatter_true.set_data(np.column_stack((x1, x2, y_true)), face_color='blue', size=5)
-        view.add(scatter_true)
-
-        # Předpovědě hodnoty
-        scatter_pred = visuals.Markers()
-        scatter_pred.set_data(np.column_stack((x1, x2, y_pred)), face_color='red', size=5)
-        view.add(scatter_pred)
-
-        # Osa X1
-        axis = visuals.XYZAxis(parent=view.scene)
-
-        # Rotující verze
-        if rotating:
-            def update(ev):
-                view.camera.azimuth += 0.8  # Rychlost rotace
-                view.camera.elevation = 16 * np.sin(ev.elapsed * 1)  # Naklánění dopředu/dozadu
-            timer = app.Timer(interval=SPEED/1000, connect=update, start=True)
-
-        app.run()
-    d_static1(test_data, epoch_predictions, rotating)
-
-
-# Funkce pro rotující graf
-def Tridimenzionální_graf_rotace():
-    Tridimenzionální_graf_main(rotating=True)
-
-# Funkce pro statický graf
-def Tridimenzionální_graf():
-    Tridimenzionální_graf_main(rotating=False)
-
-
-
-def Tridimenzionální_graf_animace():
-    # Data
-    x_values = np.array([x[0] for x, _ in test_data])
-    y_values = np.array([x[1] for x, _ in test_data])  # Druhá vstupní hodnota
-    true_values = np.array([true_y[0] for _, true_y in test_data])
-
-    # Nastavení canvasu
-    canvas = scene.SceneCanvas(keys='interactive', size=(2560, 1440), show=True)
-    canvas.native.showMaximized()
-    view = canvas.central_widget.add_view()
-
-    # Automatické nastavení přiblížení
-    max_range = max(np.ptp(x_values), np.ptp(y_values), np.ptp(true_values))
-    view.camera = 'turntable'
-    view.camera.elevation = 4
-    view.camera.azimuth = 45
-    view.camera.scale_factor = max_range * 1.5
-
-    # Skutečné hodnoty (modré body)
-    scatter_true = visuals.Markers()
-    scatter_true.set_data(np.column_stack((x_values, y_values, true_values)), face_color='blue', size=5)
-    view.add(scatter_true)
-
-    # Predikované hodnoty (červené body) - začínáme prázdným datasetem
-    scatter_pred = visuals.Markers()
-    scatter_pred.set_data(np.column_stack((x_values, y_values, np.zeros_like(x_values))), face_color='red', size=5)
-    view.add(scatter_pred)
-
-    # Osy
-    axis = visuals.XYZAxis(parent=view.scene)
-
-    # Text pro zobrazení epochy
-    # Přidání textu do scény
-    my_text = scene.Text(" ", parent=canvas.scene, color='white', font_size=24,
-                        anchor_x='left', anchor_y='top', pos=(20, 150))
-
-
-    # Proměnné pro sledování epochy
-    current_epoch = [0]
-    last_predictions = np.zeros_like(x_values)
-
-    # **Aktualizace predikcí (probíhá pomaleji)**
-    def update_predictions(ev):
-        if current_epoch[0] < len(epoch_predictions):
-            predictions_epoch = epoch_predictions[current_epoch[0]]
-            scatter_pred.set_data(np.column_stack((x_values, y_values, predictions_epoch)), face_color='red', size=5)
-            last_predictions[:] = predictions_epoch  # Uložení posledních predikcí
-            my_text.text = f'Epocha: {current_epoch[0] + 1}/{EPOCHS}'
-
-            current_epoch[0] += 1
-
-    # **Rotace kamery (probíhá plynule)**
-    def rotate_camera(ev):
-        view.camera.azimuth += 0.8  # Rychlost rotace
-        view.camera.elevation = 16 * np.sin(ev.elapsed * 0.5)  # Oscilace náklonu
-        if current_epoch[0] >= len(epoch_predictions):  # Po ukončení animace udržujeme poslední predikce
-            scatter_pred.set_data(np.column_stack((x_values, y_values, last_predictions)), face_color='red', size=5)
-
-    # Dva různé timery
-    timer_predictions = app.Timer(interval=SPEED/1000, connect=update_predictions, start=True)  # Pomalejší aktualizace predikcí
-    timer_rotation = app.Timer(interval=SPEED/1000, connect=rotate_camera, start=True)  # Rychlejší plynulá rotace
-
-    app.run()
-
-
-
-    
-# Rozdělení možností do kategorií
-categories = {
-    "Grafy struktury sítě>>": ["Struktura", "Struktura_heatmap", "Struktura_heatmap_animace"],
-    "Grafy pro 3D trénovací data>>": ["Tridimenzionální_graf", "Tridimenzionální_graf_rotace", "Tridimenzionální_graf_animace"],
-    "Grafy pro 2D trénovací data>>": ["Loss", "Predikce", "Loss_animace", "Predikce_animace"]
-}
-
-def submenu(stdscr, options):
-    """Podmenu pro vybranou kategorii."""
+def menu(stdscr):
+    curses.curs_set(0)
+    stdscr.nodelay(0)
+    stdscr.timeout(100)
     selected = 0
+
     while True:
         stdscr.clear()
-        stdscr.addstr("Use arrows to navigate, → to select, ← to return\n")
-
-        # Výpis možností
+        stdscr.addstr("Use arrow keys to navigate, Enter to select\n")
         for i, option in enumerate(options):
             if i == selected:
                 stdscr.addstr(f"> {option}\n", curses.A_REVERSE)
@@ -647,46 +515,17 @@ def submenu(stdscr, options):
             selected = (selected - 1) % len(options)
         elif key == curses.KEY_DOWN:
             selected = (selected + 1) % len(options)
-        elif key in [curses.KEY_RIGHT, 10]:  # Enter nebo šipka doprava
+        elif key == 10:  # Enter key
             stdscr.clear()
             stdscr.addstr(f"Selected: {options[selected]}\n")
             stdscr.refresh()
-            curses.napms(500)
+            curses.napms(1000)
             stdscr.clear()
             globals()[options[selected]]()
             stdscr.addstr("Press any key to return to menu...")
             stdscr.getch()
-        elif key in [curses.KEY_LEFT, 27]:  # ESC nebo šipka doleva
-            break
-
-
-def menu(stdscr):
-    """Hlavní menu."""
-    curses.curs_set(0)
-    stdscr.nodelay(0)
-    stdscr.timeout(100)
-    selected = 0
-    category_keys = list(categories.keys())
-
-    while True:
-        stdscr.clear()
-        stdscr.addstr("Use arrows to navigate, → to select\n")
-        
-        # Výpis kategorií
-        for i, category in enumerate(category_keys):
-            if i == selected:
-                stdscr.addstr(f"> {category}\n", curses.A_REVERSE)
-            else:
-                stdscr.addstr(f"  {category}\n")
-
-        key = stdscr.getch()
-        if key == curses.KEY_UP:
-            selected = (selected - 1) % len(category_keys)
-        elif key == curses.KEY_DOWN:
-            selected = (selected + 1) % len(category_keys)
-        elif key in [curses.KEY_RIGHT, 10]:  # Enter nebo šipka doprava
-            submenu(stdscr, categories[category_keys[selected]])
-
 
 if __name__ == "__main__":
     curses.wrapper(menu)
+
+
