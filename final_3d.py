@@ -696,3 +696,5 @@ def menu(stdscr):
 
 if __name__ == "__main__":
     curses.wrapper(menu)
+
+#700 řádků kodu, mé nejlepší dílo
