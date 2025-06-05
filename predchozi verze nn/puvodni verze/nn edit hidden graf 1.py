@@ -1,7 +1,3 @@
-###################################################
-#
-#
-###################################################
 import random
 import math
 ##########
@@ -13,31 +9,23 @@ import networkx as nx
 import seaborn as sns
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
+import torch
 ##########
 
 INPUT_SIZE = 1
 NUM_HIDDEN_LAYERS = 4
 HIDDEN_SIZE = 16
 OUTPUT_SIZE = 1
-LEARNING_RATE = 0.0001
-EPOCHS = 100
-LEAKY_RELU_ALPHA = 0.01
+LEARNING_RATE = 0.001
+EPOCHS = 150
+LEAKY_RELU_ALPHA = 0.1
 PRINT_EVERY = 1
-FUNKCE = "y = x * cos(x ^ 2)"
+FUNKCE = "cosine: y = cos(x)"
 ROZSAH_TRAIN_DAT = "-8 8"
-DATA_FILE = "train\\te_moc316.txt"
-TEST_DATA = "train\\te_moc316.txt"
+DATA_FILE = "train\\tr_cosine16.txt"
+TEST_DATA = "train\\te_cosine16.txt"
 
-'''''
-\\te_x_cos_x216.txt"
-\\te_xcos(x)16.txt"
-\\tr_(x7+3)2.txt"
-\\tr_moc316.txt"
-\\tr_x_cos_x216.txt"
-\\tr_xcos(x)16.txt"
-\\te_(x7+3)2.txt"
-\\te_moc316.txt"¨
-'''
+
 
 
 
@@ -71,7 +59,7 @@ def draw_neural_network(input_size, hidden_layers, hidden_size, output_size):
         
         prev_layer_start = current_layer_start
     
-    plt.figure(figsize=(16, 9), dpi = 160)
+    plt.figure(figsize=(19, 10))
     nx.draw(G, pos=positions, with_labels=True, labels=labels, node_color='lightblue', edge_color='gray', node_size=1500)
     plt.suptitle(f"Struktura neuronové sítě\nNeurony ve skrytých vrstvách: {hidden_size}, Skryté vrstvy: {hidden_layers}")
     plt.subplots_adjust(top=3)
@@ -109,8 +97,6 @@ def leaky_relu(x):
 def leaky_relu_derivative(x):
     return 1 if x > 0 else LEAKY_RELU_ALPHA
 
-
-'''''
 def forward(x):
     layers = [x]
     for i in range(NUM_HIDDEN_LAYERS + 1):
@@ -133,40 +119,6 @@ def backward(x, y, layers):
             for k in range(len(layers[i])):
                 weights[i][k][j] -= LEARNING_RATE * gradients[1][j] * layers[i][k]
             biases[i][j] -= LEARNING_RATE * gradients[1][j]
-'''''
-
-def forward(x):
-    layers = [x]
-    for i in range(NUM_HIDDEN_LAYERS + 1):
-        next_layer = [leaky_relu(sum(layers[-1][k] * weights[i][k][j] for k in range(len(layers[-1]))) + biases[i][j])
-                      for j in range(len(biases[i]))]
-        layers.append(next_layer)
-    return layers
-
-def backward(x, y, layers):
-    global weights, biases
-    global errors 
-
-    # Výpočet chyby jako MSE
-    errors = [[(layers[-1][i] - y[i]) for i in range(OUTPUT_SIZE)]]
-    
-    # Gradient MSE: (2/N) * (y_pred - y_true)
-    mse_gradient = [(2 / OUTPUT_SIZE) * e for e in errors[0]]
-    gradients = [mse_gradient]  # Počáteční gradient chyby
-
-    # Backpropagation skrz vrstvy
-    for i in range(NUM_HIDDEN_LAYERS, -1, -1):
-        layer_errors = [sum(gradients[0][j] * weights[i][k][j] for j in range(len(gradients[0]))) 
-                        for k in range(len(layers[i]))]
-        gradients.insert(0, [layer_errors[k] * leaky_relu_derivative(layers[i][k]) 
-                             for k in range(len(layer_errors))])
-        
-        # Úprava vah a biasů
-        for j in range(len(gradients[1])):
-            for k in range(len(layers[i])):
-                weights[i][k][j] -= LEARNING_RATE * gradients[1][j] * layers[i][k]
-            biases[i][j] -= LEARNING_RATE * gradients[1][j]
-
 
 def load_training_data(file):
     data = []
@@ -269,27 +221,24 @@ for x, true_y in test_data:
     # Výpočet průměrné procentuální odchylky
 mean_absolute_percentage_error = calculate_mean_absolute_percentage_error(true_values, predictions)
 print(f"Mean Absolute Percentage Error (MAPE): {mean_absolute_percentage_error:.2f}%")
-elapsed_time = (end_time - start_time)
-print(f"Elapsed time: {elapsed_time:.2f} seconds")
-print(type(EPOCHS))
-graf_time = round((elapsed_time/EPOCHS), 4)
-print(graf_time)
+elapsed_time = (end_time - start_time)/60
+print(f"Elapsed time: {elapsed_time:.2f}minutes")
     ################x####
 
 x_plot = np.array(x_values)
 y_true_plot = np.array(true_values)
 y_pred_plot = np.array(predictions)
 
-plt.figure(figsize=(16, 9), dpi = 160)
+plt.figure(figsize=(19, 10))
 plt.plot(range(PRINT_EVERY, EPOCHS + 1, PRINT_EVERY), loss_history, label="Loss")
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
-plt.title(f"Křivka učení\nčas na epochu: {graf_time}, neurony ve skrytych vrstvách: {HIDDEN_SIZE}, skryté vrstvy: {NUM_HIDDEN_LAYERS}, alpha: {LEAKY_RELU_ALPHA}, learning_rate: {LEARNING_RATE} \nfunkce: {FUNKCE}, rozsah train dat: {ROZSAH_TRAIN_DAT}")
+plt.title(f"Křivka učení\nneurony ve skrytych vrstvách: {HIDDEN_SIZE}, skryté vrstvy: {NUM_HIDDEN_LAYERS}, alpha: {LEAKY_RELU_ALPHA}, learning_rate: {LEARNING_RATE} \nfunkce: {FUNKCE}, rozsah train dat: {ROZSAH_TRAIN_DAT}")
 plt.legend()
 plt.grid(True)
 plt.show()
 
-plt.figure(figsize=(16, 9), dpi = 160)
+plt.figure(figsize=(19, 10))
 plt.scatter(x_plot, y_true_plot, color='blue', label='skutečné hodnoty')
 plt.scatter(x_plot, y_pred_plot, color='red', label='predikované hodnoty')
 plt.xlabel('x')
@@ -301,73 +250,20 @@ plt.show()
 
 print("complete")
 
-from matplotlib.colors import Normalize
-from matplotlib.cm import ScalarMappable
+plt.figure(figsize=(19, 10))
+sns.histplot(np.array(true_values) - np.array(predictions), bins=30, kde=True)
+plt.xlabel("Chyba (y_true - y_pred)")
+plt.ylabel("Počet vzorků")
+plt.title("Histogram chyb")
+plt.grid(True)
+plt.show()
 
-def draw_network_with_weights(input_size, hidden_layers, hidden_size, output_size, weights):
-    G = nx.DiGraph()
-    positions = {}
-    layer_sizes = [input_size] + [hidden_size] * hidden_layers + [output_size]
-    
-    neuron_id = 0
-    x_spacing = 2
-    y_spacing = 1.5
-    layer_colors = plt.cm.viridis(np.linspace(0, 1, len(layer_sizes)))
-
-    # Přidání uzlů a jejich pozic
-    for layer_idx, layer_size in enumerate(layer_sizes):
-        y_offset = -(layer_size - 1) * y_spacing / 2
-        for neuron_idx in range(layer_size):
-            G.add_node(neuron_id, layer=layer_idx)
-            positions[neuron_id] = (layer_idx * x_spacing, y_offset + neuron_idx * y_spacing)
-            neuron_id += 1
-
-    # Přidání hran s vahami
-    prev_layer_start = 0
-    for layer_idx in range(len(layer_sizes) - 1):
-        current_layer_start = prev_layer_start + layer_sizes[layer_idx]
-        for i in range(layer_sizes[layer_idx]):
-            for j in range(layer_sizes[layer_idx + 1]):
-                weight_value = weights[layer_idx][i][j]
-                G.add_edge(prev_layer_start + i, current_layer_start + j, weight=weight_value)
-        prev_layer_start = current_layer_start
-
-    # Vizualizace
-    edges = G.edges(data=True)
-    weights_list = [data['weight'] for _, _, data in edges]
-    
-    # Normalizace vah pro barvu a tloušťku hran
-    norm = Normalize(vmin=min(weights_list), vmax=max(weights_list))
-    edge_colors = [plt.cm.seismic(norm(w)) for w in weights_list]  # Červená = negativní, modrá = pozitivní
-    edge_widths = [abs(w) * 2 for w in weights_list]  # Zvýraznění síly váhy
-
-    # Barvy uzlů podle vrstev
-    node_colors = [layer_colors[G.nodes[n]['layer']] for n in G.nodes()]
-
-    # Vykreslení sítě
-    # Vykreslení sítě
-    fig, ax = plt.subplots(figsize=(12, 8))
-    nx.draw(
-        G, pos=positions, 
-        node_color=node_colors, 
-        edge_color=edge_colors, 
-        width=edge_widths, 
-        with_labels=False, 
-        node_size=700, 
-        edge_cmap=plt.cm.seismic,
-        ax=ax  # Explicitně připojíme osy
-    )
-
-    # Přidání barevné legendy pro váhy
-    sm = ScalarMappable(cmap=plt.cm.seismic, norm=norm)
-    sm.set_array([])  # Potřebné pro vytvoření colorbar
-    cbar = plt.colorbar(sm, ax=ax)  # Připojení ke konkrétním osám
-    cbar.set_label('Hodnota váhy (negativní -> pozitivní)')
-
-    plt.title("Neuronová síť s vizualizací vah")
-    plt.axis('off')
-    plt.show()
-
-
-# Zavolání funkce
-draw_network_with_weights(INPUT_SIZE, NUM_HIDDEN_LAYERS, HIDDEN_SIZE, OUTPUT_SIZE, weights)
+plt.figure(figsize=(19, 10))
+sns.kdeplot(true_values, label="Skutečné hodnoty", fill=True, color="blue")
+sns.kdeplot(predictions, label="Predikované hodnoty", fill=True, color="red")
+plt.xlabel("y")
+plt.ylabel("Hustota pravděpodobnosti")
+plt.legend()
+plt.title("Porovnání distribuce skutečných a predikovaných hodnot")
+plt.grid(True)
+plt.show()
